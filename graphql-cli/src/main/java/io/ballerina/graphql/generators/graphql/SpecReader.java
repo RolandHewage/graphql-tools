@@ -1,3 +1,21 @@
+/*
+ *  Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ */
+
 package io.ballerina.graphql.generators.graphql;
 
 import graphql.language.ListType;
@@ -16,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class implements the GraphQL Schema (SDL) reader.
+ * This class represents the GraphQL Schema (SDL) reader.
  */
 public class SpecReader {
 
@@ -24,6 +42,7 @@ public class SpecReader {
      * Get the input object type names from the GraphQL schema.
      *
      * @param graphQLSchema         the instance of the Graphql schema file
+     * @return                      the list of the input object type names
      */
     public static List<String> getInputObjectTypeNames(GraphQLSchema graphQLSchema) {
         List<String> inputObjectTypeNames = new ArrayList<>();
@@ -40,6 +59,7 @@ public class SpecReader {
      *
      * @param graphQLSchema         the instance of the Graphql schema file
      * @param inputObjectTypeName   the input object type name
+     * @return                      the input object type fields map
      */
     public static Map<String, String> getInputTypeFieldsMap(GraphQLSchema graphQLSchema, String inputObjectTypeName) {
         Map<String, String> inputTypeFieldsMap = new HashMap<>();
@@ -57,6 +77,12 @@ public class SpecReader {
         return inputTypeFieldsMap;
     }
 
+    /**
+     * Gets the input field type as a string representation of Ballerina type.
+     *
+     * @param field         the instance of the `GraphQLInputObjectField`
+     * @return              the input field type as a string representation of Ballerina type
+     */
     private static String getInputFieldType(GraphQLInputObjectField field) {
         StringBuilder fieldTypeAsString = new StringBuilder();
         if (field.getDefinition().getType() instanceof TypeName) {
@@ -108,6 +134,7 @@ public class SpecReader {
      * Get the object type names from the GraphQL schema.
      *
      * @param graphQLSchema         the instance of the Graphql schema file
+     * @return                      the list of the object type names
      */
     public static List<String> getObjectTypeNames(GraphQLSchema graphQLSchema) {
         List<String> objectTypeNames = new ArrayList<>();
@@ -120,10 +147,11 @@ public class SpecReader {
     }
 
     /**
-     * Get the input object type fields map based on the input object type name from the GraphQL schema.
+     * Get the object type fields map based on the input object type name from the GraphQL schema.
      *
      * @param graphQLSchema         the instance of the Graphql schema file
      * @param objectTypeName        the object type name
+     * @return                      the object type fields map
      */
     public static Map<String, String> getObjectTypeFieldsMap(GraphQLSchema graphQLSchema, String objectTypeName) {
         Map<String, String> inputTypeFieldsMap = new HashMap<>();
@@ -141,6 +169,12 @@ public class SpecReader {
         return inputTypeFieldsMap;
     }
 
+    /**
+     * Gets the object field type as a string representation of Ballerina type.
+     *
+     * @param field         the instance of the `GraphQLFieldDefinition`
+     * @return              the object field type as a string representation of Ballerina type
+     */
     private static String getObjectFieldType(GraphQLFieldDefinition field) {
         StringBuilder fieldTypeAsString = new StringBuilder();
         if (field.getDefinition().getType() instanceof TypeName) {

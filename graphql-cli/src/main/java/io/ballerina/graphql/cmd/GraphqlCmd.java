@@ -24,8 +24,6 @@ import graphql.schema.idl.errors.SchemaProblem;
 import graphql.validation.ValidationError;
 import graphql.validation.Validator;
 import io.ballerina.cli.BLauncherCmd;
-import io.ballerina.graphql.cmd.mappers.Default;
-import io.ballerina.graphql.cmd.mappers.Endpoints;
 import io.ballerina.graphql.cmd.mappers.Extension;
 import io.ballerina.graphql.cmd.mappers.GraphqlConfig;
 import io.ballerina.graphql.cmd.mappers.Project;
@@ -36,7 +34,9 @@ import io.ballerina.graphql.exceptions.BallerinaGraphqlQueryValidationException;
 import io.ballerina.graphql.exceptions.BallerinaGraphqlSDLValidationException;
 import io.ballerina.graphql.exceptions.BallerinaGraphqlSchemaPathValidationException;
 import io.ballerina.graphql.generators.CodeGenerator;
-import org.yaml.snakeyaml.TypeDescription;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.ballerinalang.formatter.core.FormatterException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -56,8 +56,11 @@ import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_EMPTY_CONFIGURATION
 import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_INVALID_CONFIGURATION_YAML;
 import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_MISSING_GRAPHQL_CONFIGURATION_FILE;
 import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_MISSING_INPUT_ARGUMENT;
+import static io.ballerina.graphql.cmd.Constants.URL_RECOGNIZER;
 import static io.ballerina.graphql.cmd.Constants.YAML_EXTENSION;
+import static io.ballerina.graphql.cmd.Constants.YML_EXTENSION;
 import static io.ballerina.graphql.cmd.Utils.isValidURL;
+import static io.ballerina.graphql.generators.CodeGeneratorConstants.ROOT_PROJECT_NAME;
 
 /**
  * Main class to implement "graphql" command for Ballerina.
@@ -68,6 +71,7 @@ import static io.ballerina.graphql.cmd.Utils.isValidURL;
         description = "Generates Ballerina clients from GraphQL queries and GraphQL SDL."
 )
 public class GraphqlCmd implements BLauncherCmd {
+    private static final Log log = LogFactory.getLog(GraphqlCmd.class);
     private static final String CMD_NAME = "graphql";
     private PrintStream outStream;
     private boolean exitWhenFinish;
@@ -130,7 +134,7 @@ public class GraphqlCmd implements BLauncherCmd {
             return;
         }
 
-        // Check if CLI input argument is present
+        // Check if CLI input path argument is present
         if (inputPath) {
             // Check if GraphQL configuration file is provided
             if (argList == null) {
@@ -180,15 +184,9 @@ public class GraphqlCmd implements BLauncherCmd {
     private GraphqlConfig getGraphQLConfig(String filePath)
             throws BallerinaGraphqlSDLValidationException, BallerinaGraphqlQueryValidationException,
             BallerinaGraphqlException, IOException {
-        if (filePath.endsWith(YAML_EXTENSION)) {
+        if (filePath.endsWith(YAML_EXTENSION) || filePath.endsWith(YML_EXTENSION)) {
             InputStream inputStream = new FileInputStream(new File(filePath));
-            Constructor constructor = new Constructor(GraphqlConfig.class);
-
-            TypeDescription endpointsDesc = new TypeDescription(Endpoints.class);
-            endpointsDesc.substituteProperty("default", Default.class,
-                    "getDefaultName", "setDefaultName");
-            constructor.addTypeDescription(endpointsDesc);
-
+            Constructor constructor = Utils.getProcessedConstructor();
             Yaml yaml = new Yaml(constructor);
             GraphqlConfig graphqlConfig = yaml.load(inputStream);
             if (graphqlConfig == null) {
@@ -278,11 +276,11 @@ public class GraphqlCmd implements BLauncherCmd {
      * @param documents      the documents value of the Graphql config file
      */
     private void validateSchemaAndDocumentsConfiguration(String schema, List<String> documents) throws IOException {
-        if (schema != null && documents != null && schema.startsWith("http")) {
+        if (schema != null && documents != null && schema.startsWith(URL_RECOGNIZER)) {
             validateSchemaUrl(schema);
         }
 
-        if (schema != null && documents != null && !schema.startsWith("http")) {
+        if (schema != null && documents != null && !schema.startsWith(URL_RECOGNIZER)) {
             File schemaFile = new File(schema);
             Path schemaPath = Paths.get(schemaFile.getCanonicalPath());
             try {
@@ -327,8 +325,8 @@ public class GraphqlCmd implements BLauncherCmd {
             BallerinaGraphqlException {
         String schema = graphqlConfig.getSchema();
         List<String> documents = graphqlConfig.getDocuments();
-        Map<String, Project> projects = graphqlConfig.getProjects();
         Extension extensions = graphqlConfig.getExtensions();
+        Map<String, Project> projects = graphqlConfig.getProjects();
 
         validateProjectContent(schema, documents, extensions);
 
@@ -411,40 +409,30 @@ public class GraphqlCmd implements BLauncherCmd {
      * @param graphqlConfig         the instance of the Graphql config file
      */
     private void generateCode(GraphqlConfig graphqlConfig) throws IOException {
-        String schema = graphqlConfig.getSchema();
-        List<String> documents = graphqlConfig.getDocuments();
-        Map<String, Project> projects = graphqlConfig.getProjects();
-        Extension extensions = graphqlConfig.getExtensions();
+        try {
+            CodeGenerator codeGenerator = new CodeGenerator();
+            String schema = graphqlConfig.getSchema();
+            List<String> documents = graphqlConfig.getDocuments();
+            Extension extensions = graphqlConfig.getExtensions();
+            Map<String, Project> projects = graphqlConfig.getProjects();
 
-        generateProjectCode(schema, documents, extensions);
-        if (projects != null) {
-            for (String projectName : projects.keySet()) {
-                Extension projectExtensions = projects.get(projectName).getExtensions();
-                generateProjectCode(
-                        projects.get(projectName).getSchema(),
-                        projects.get(projectName).getDocuments(),
-                        projectExtensions);
+            codeGenerator.generateProjectCode(schema, documents, extensions, getTargetOutputPath().toString(),
+                    ROOT_PROJECT_NAME);
+            if (projects != null) {
+                for (String projectName : projects.keySet()) {
+                    Extension projectExtensions = projects.get(projectName).getExtensions();
+                    codeGenerator.generateProjectCode(
+                            projects.get(projectName).getSchema(),
+                            projects.get(projectName).getDocuments(),
+                            projectExtensions,
+                            getTargetOutputPath().toString(),
+                            projectName);
+                }
             }
-        }
-    }
-
-    /**
-     * Generates the code for each project.
-     *
-     * @param schema         the schema value of the Graphql config file
-     * @param documents      the documents value of the Graphql config file
-     */
-    private void generateProjectCode(String schema, List<String> documents, Extension extensions) throws IOException {
-        CodeGenerator codeGenerator = new CodeGenerator();
-        for (String document : documents) {
-            try {
-                codeGenerator.generate(schema, document, extensions, getTargetOutputPath().toString());
-            } catch (BallerinaGraphqlIntospectionException |
-                    BallerinaGraphqlSchemaPathValidationException |
-                    BallerinaGraphqlDocumentPathValidationException e) {
-                outStream.println(e.getMessage());
-                exitError(this.exitWhenFinish);
-            }
+        } catch (BallerinaGraphqlIntospectionException | BallerinaGraphqlSchemaPathValidationException |
+                BallerinaGraphqlDocumentPathValidationException | FormatterException e) {
+            outStream.println(e.getMessage());
+            exitError(this.exitWhenFinish);
         }
     }
 

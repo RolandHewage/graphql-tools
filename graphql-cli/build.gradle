@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 plugins {
     id 'java'
     id 'jacoco'
@@ -7,6 +24,13 @@ plugins {
 ext.ballerinaLangVersion = project.ballerinaLangVersion
 ext.testngVersion = project.testngVersion
 ext.slf4jVersion = project.slf4jVersion
+ext.commonsLoggingVersion = project.commonsLoggingVersion
+ext.commonsIoVersion = project.commonsIoVersion
+ext.graphqlJavaVersion = project.graphqlJavaVersion
+ext.googleGuavaVersion = project.googleGuavaVersion
+ext.snakeYamlVersion = project.snakeYamlVersion
+ext.orgJsonVersion = project.orgJsonVersion
+ext.picocliVersion = project.picocliVersion
 ext.stdlibIoVersion = project.stdlibIoVersion
 ext.stdlibLogVersion = project.stdlibLogVersion
 ext.stdlibMimeVersion = project.stdlibMimeVersion
@@ -70,36 +94,28 @@ allprojects {
         configFile file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
         exclude excludePattern
     }
-}
 
-ext {
-    snapshotVersion= '-SNAPSHOT'
-    timestampedVersionRegex = '.*-\\d{8}-\\d{6}-\\w.*\$'
+    ext {
+        snapshotVersion= '-SNAPSHOT'
+        timestampedVersionRegex = '.*-\\d{8}-\\d{6}-\\w.*\$'
+    }
 }
 
 dependencies {
-    implementation 'io.apicurio:apicurio-data-models:1.1.15'
-    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5'
-    implementation 'commons-io:commons-io:2.11.0'
     implementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-parser:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-cli:${ballerinaLangVersion}"
     implementation "org.ballerinalang:formatter-core:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-tools-api:${ballerinaLangVersion}"
     implementation "io.ballerina.stdlib:http-native:${stdlibHttpVersion}"
-    implementation "org.ballerinalang:language-server-commons:${ballerinaLangVersion}"
-    implementation "info.picocli:picocli:4.0.1"
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testImplementation "org.testng:testng:7.3.0"
-    implementation group: 'com.graphql-java', name: 'graphql-java', version: '17.2' // NEW
-    implementation 'com.google.guava:guava:30.1.1-jre' // NEW
-    implementation group: 'commons-logging', name: 'commons-logging', version: '1.2' // NEW
-    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29' // NEW
-    shadow group: 'com.graphql-java', name: 'graphql-java', version: '17.2' // NEW
-    shadow 'com.google.guava:guava:30.1.1-jre' // NEW
-    shadow group: 'org.json', name: 'json', version: '20210307' // NEW
+    implementation "info.picocli:picocli:${picocliVersion}"
+    testImplementation "org.testng:testng:${testngVersion}"
+    implementation "commons-io:commons-io:${commonsIoVersion}"
+    implementation "commons-logging:commons-logging:${commonsLoggingVersion}" // NEW
+    implementation "org.yaml:snakeyaml:${snakeYamlVersion}" // NEW
+    shadow "com.graphql-java:graphql-java:${graphqlJavaVersion}" // NEW
+    shadow "com.google.guava:guava:${googleGuavaVersion}" // NEW
+    shadow "org.json:json:${orgJsonVersion}" // NEW
 }
 
 shadowJar {
@@ -109,10 +125,7 @@ shadowJar {
 build.dependsOn(shadowJar)
 
 test {
-    useJUnitPlatform()
-//    useTestNG() {
-//        suites "src/test/resources/testng.xml"
-//    }
+    useTestNG()
 }
 
 task codeCoverageReport(type: JacocoReport) {

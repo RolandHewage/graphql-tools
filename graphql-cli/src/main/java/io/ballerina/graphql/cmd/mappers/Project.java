@@ -21,7 +21,7 @@ package io.ballerina.graphql.cmd.mappers;
 import java.util.List;
 
 /**
- * This class represents a GraphQL project.
+ * POJO class representing a GraphQL project in GraphQL config file.
  */
 public class Project {
     private String schema;

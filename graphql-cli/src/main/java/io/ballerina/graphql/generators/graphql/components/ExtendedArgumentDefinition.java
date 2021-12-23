@@ -16,17 +16,26 @@
  *  under the License.
  */
 
-package io.ballerina.graphql.exceptions;
+package io.ballerina.graphql.generators.graphql.components;
+
+import graphql.language.Argument;
+import graphql.language.Value;
 
 /**
- * Exception type definition for GraphQL schema path validation related errors.
+ * ExtendedArgumentDefinition class to extract necessary components from an GraphQL Argument.
  */
-public class BallerinaGraphqlSchemaPathValidationException extends Exception {
-    public BallerinaGraphqlSchemaPathValidationException(String message, Throwable e) {
-        super(message, e);
+public class ExtendedArgumentDefinition {
+    private final Argument argument;
+
+    public ExtendedArgumentDefinition(Argument argument) {
+        this.argument = argument;
     }
 
-    public BallerinaGraphqlSchemaPathValidationException(String message) {
-        super(message);
+    public String getName() {
+        return this.argument.getName();
+    }
+
+    public Value<?> getArgumentValue() {
+        return this.argument.getValue();
     }
 }

@@ -16,17 +16,17 @@
  *  under the License.
  */
 
-package io.ballerina.graphql.exceptions;
+package io.ballerina.graphql.generators.graphql;
+
+import io.ballerina.graphql.generators.graphql.components.ExtendedFragmentDefinition;
+import io.ballerina.graphql.generators.graphql.components.ExtendedOperationDefinition;
+
+import java.util.List;
 
 /**
- * Exception type definition for GraphQL schema path validation related errors.
- */
-public class BallerinaGraphqlSchemaPathValidationException extends Exception {
-    public BallerinaGraphqlSchemaPathValidationException(String message, Throwable e) {
-        super(message, e);
-    }
-
-    public BallerinaGraphqlSchemaPathValidationException(String message) {
-        super(message);
-    }
+* Interface for GraphQL Query reader. Any GraphQL Query reader implementation should implement this.
+*/
+public interface IQueryReader {
+    List<ExtendedOperationDefinition> getExtendedOperationDefinitions();
+    List<ExtendedFragmentDefinition> getExtendedFragmentDefinitions();
 }

@@ -22,25 +22,22 @@ package io.ballerina.graphql.cmd;
  * This class represents GraphQL command line tool related constants.
  */
 public class Constants {
-    public static final String MESSAGE_FOR_MISSING_GRAPHQL_CONFIGURATION_FILE = "A GraphQL configuration file " +
-            "is required to generate the clients. \ne.g: bal graphql --input <GraphQL configuration file>";
 
-    public static final String YAML_EXTENSION = ".yaml";
-
+    // GraphQL command line tool messages
     public static final String MESSAGE_FOR_MISSING_INPUT_ARGUMENT = "Missing the input file path," +
             " Please provide the path of the GraphQL config file with -i flag";
-
-    public static final String MESSAGE_FOR_INVALID_EXTENSION = "A GraphQL configuration file is required to generate " +
-            "the clients. \ne.g: bal graphql --input <GraphQL configuration file>";
-
+    public static final String MESSAGE_FOR_MISSING_GRAPHQL_CONFIGURATION_FILE = "A GraphQL configuration file " +
+            "is required to generate the clients. \ne.g: bal graphql --input <GraphQL configuration file>";
+    public static final String MESSAGE_FOR_EMPTY_CONFIGURATION_YAML = "Empty GraphQL " +
+            "configuration YAML file provided. Please provide a valid content in the YAML file.";
     public static final String MESSAGE_FOR_INVALID_CONFIGURATION_YAML = "Invalid structure used for the GraphQL " +
             "configuration YAML file.";
 
-    public static final String MESSAGE_FOR_EMPTY_CONFIGURATION_YAML = "Empty GraphQL " +
-            "configuration YAML file provided. Please provide a valid content in the YAML file.";
+    // GraphQL config file extensions supported
+    public static final String YAML_EXTENSION = ".yaml";
+    public static final String YML_EXTENSION = ".yml";
 
-    public static final String QUERY = "query";
-
+    // GraphQL Introspection query
     public static final String INTROSPECTION_QUERY =
             "    query IntrospectionQuery {\n" +
             "      __schema {\n" +
@@ -133,6 +130,10 @@ public class Constants {
             "        }\n" +
             "      }\n" +
             "    }\n";
+
+    // Constants related to HTTP request
+    public static final String QUERY = "query";
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
+    public static final String URL_RECOGNIZER = "http";
 }
