@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_EMPTY_PROJECT;
+import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_INVALID_DOCUMENT_PATH;
+import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_INVALID_SCHEMA_PATH;
 import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_INVALID_SCHEMA_URL;
 import static io.ballerina.graphql.cmd.Constants.MESSAGE_FOR_MISSING_SCHEMA_OR_DOCUMENTS;
 import static io.ballerina.graphql.cmd.Constants.URL_RECOGNIZER;
@@ -177,9 +179,9 @@ public class ConfigValidator {
      * @param schemaPath                            the path to the schema
      * @throws SchemaPathValidationException        when a schema path validation error occurs
      */
-    public static void validateSchemaPath(Path schemaPath) throws SchemaPathValidationException {
+    private static void validateSchemaPath(Path schemaPath) throws SchemaPathValidationException {
         if (!Files.exists(schemaPath)) {
-            throw new SchemaPathValidationException("Schema file " + schemaPath + " doesn't exist.");
+            throw new SchemaPathValidationException(MESSAGE_FOR_INVALID_SCHEMA_PATH + schemaPath);
         }
     }
 
@@ -189,9 +191,9 @@ public class ConfigValidator {
      * @param documentPath                          the path to the document
      * @throws DocumentPathValidationException      when a document path validation error occurs
      */
-    public static void validateDocumentPath(Path documentPath) throws DocumentPathValidationException {
+    private static void validateDocumentPath(Path documentPath) throws DocumentPathValidationException {
         if (!Files.exists(documentPath)) {
-            throw new DocumentPathValidationException("Queries file " + documentPath + " doesn't exist.");
+            throw new DocumentPathValidationException(MESSAGE_FOR_INVALID_DOCUMENT_PATH + documentPath);
         }
     }
 }

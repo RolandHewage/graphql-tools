@@ -44,6 +44,14 @@ public class Constants {
             "project is configured with an invalid web URL for schema location. " +
             "\nPlease provide a valid graphQL endpoint URL or file path for the schema section " +
             "under each project in the YAML file. \nInvalid URL ";
+    public static final String MESSAGE_FOR_INVALID_SCHEMA_PATH = "The GraphQL configuration YAML file " +
+            "project is configured with a file path for schema location which does not exist. " +
+            "\nPlease provide a valid graphQL endpoint URL or file path for the schema section " +
+            "under each project in the YAML file. \nInvalid file path ";
+    public static final String MESSAGE_FOR_INVALID_DOCUMENT_PATH = "The GraphQL configuration YAML file " +
+            "project is configured with a file path for queries file location which does not exist. " +
+            "\nPlease provide a valid file path for the schema section " +
+            "under each project in the YAML file. \nInvalid file path ";
 
     // GraphQL config file extensions supported
     public static final String YAML_EXTENSION = ".yaml";
