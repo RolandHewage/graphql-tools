@@ -90,6 +90,7 @@ subprojects {
 }
 
 task codeCoverageReport(type: JacocoReport) {
+    dependsOn = subprojects.test
 
     executionData fileTree(project.rootDir.absolutePath).include("**/build/coverage-reports/*.exec")
 
