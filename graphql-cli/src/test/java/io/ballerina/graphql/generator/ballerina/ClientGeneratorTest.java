@@ -41,7 +41,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- * This class is used to test the functionality of the GraphQL code generator.
+ * This class is used to test the functionality of the GraphQL client code generator.
  */
 public class ClientGeneratorTest extends GraphqlTest {
 

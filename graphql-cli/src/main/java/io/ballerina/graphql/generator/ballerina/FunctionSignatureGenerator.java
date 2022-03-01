@@ -264,7 +264,7 @@ public class FunctionSignatureGenerator {
         List<Node> optionalParameters = new ArrayList<>();
 
         for (String variableName :variableDefinitionsMap.keySet()) {
-            if (variableDefinitionsMap.get(variableName).getFieldTypeAsString().contains(QUESTION_MARK)) {
+            if (variableDefinitionsMap.get(variableName).getFieldTypeAsString().endsWith(QUESTION_MARK)) {
                 BuiltinSimpleNameReferenceNode optionalFieldTypeName = createBuiltinSimpleNameReferenceNode(null,
                         createIdentifierToken(variableDefinitionsMap.get(variableName).getFieldTypeAsString()));
                 IdentifierToken optionalFieldParamName = createIdentifierToken(variableName);
@@ -287,6 +287,9 @@ public class FunctionSignatureGenerator {
         }
         parameters.addAll(requiredParameters);
         parameters.addAll(optionalParameters);
+        if (parameters.size() >= 1) {
+            parameters.remove(parameters.size() - 1);
+        }
         return parameters;
     }
 }
