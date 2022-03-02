@@ -28,6 +28,10 @@
 <!--            <class name="io.ballerina.graphql.validator.ConfigValidatorTest"/>-->
             <class name="io.ballerina.graphql.generator.CodeGeneratorTest"/>
             <class name="io.ballerina.graphql.generator.ballerina.ClientGeneratorTest"/>
+<!--            <class name="io.ballerina.graphql.generator.ballerina.UtilsGeneratorTest"/>-->
+            <class name="io.ballerina.graphql.generator.ballerina.AuthConfigGeneratorTest"/>
+            <class name="io.ballerina.graphql.generator.ballerina.FunctionSignatureGeneratorTest"/>
+            <class name="io.ballerina.graphql.generator.ballerina.FunctionBodyGeneratorTest"/>
         </classes>
     </test>
 </suite>
