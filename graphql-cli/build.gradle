@@ -16,6 +16,7 @@
  */
 
 apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "jacoco"
 
 dependencies {
     implementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
@@ -43,5 +44,18 @@ build.dependsOn(shadowJar)
 test {
     useTestNG() {
         suites "src/test/resources/testng.xml"
+    }
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = file("$rootProject.projectDir/build/reports/jacoco")
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = true
     }
 }
